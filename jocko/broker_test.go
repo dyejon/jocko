@@ -140,18 +140,22 @@ func TestBroker_Run(t *testing.T) {
 				requests: []*Context{
 					{
 						header: &protocol.RequestHeader{CorrelationID: 1},
-						req: &protocol.CreateTopicRequests{Requests: []*protocol.CreateTopicRequest{{
-							Topic:             "the-topic",
-							NumPartitions:     1,
-							ReplicationFactor: 1,
-						}}},
+						req: &protocol.CreateTopicRequests{
+							Timeout: 100 * time.Millisecond,
+							Requests: []*protocol.CreateTopicRequest{{
+								Topic:             "the-topic",
+								NumPartitions:     1,
+								ReplicationFactor: 1,
+							}}},
 					},
 					{
 						header: &protocol.RequestHeader{CorrelationID: 2},
-						req: &protocol.ProduceRequest{TopicData: []*protocol.TopicData{{
-							Topic: "the-topic",
-							Data: []*protocol.Data{{
-								RecordSet: mustEncode(&protocol.MessageSet{Offset: 0, Messages: []*protocol.Message{{Value: []byte("The message.")}}})}}}}},
+						req: &protocol.ProduceRequest{
+							Timeout: 100 * time.Millisecond,
+							TopicData: []*protocol.TopicData{{
+								Topic: "the-topic",
+								Data: []*protocol.Data{{
+									RecordSet: mustEncode(&protocol.MessageSet{Offset: 0, Messages: []*protocol.Message{{Value: []byte("The message.")}}})}}}}},
 					},
 					{
 						header: &protocol.RequestHeader{CorrelationID: 3},
@@ -215,22 +219,39 @@ func TestBroker_Run(t *testing.T) {
 				requests: []*Context{
 					{
 						header: &protocol.RequestHeader{CorrelationID: 1},
-						req: &protocol.CreateTopicRequests{Requests: []*protocol.CreateTopicRequest{{
-							Topic:             "the-topic",
-							NumPartitions:     1,
-							ReplicationFactor: 1,
-						}}},
+						req: &protocol.CreateTopicRequests{
+							Timeout: 100 * time.Millisecond,
+							Requests: []*protocol.CreateTopicRequest{{
+								Topic:             "the-topic",
+								NumPartitions:     1,
+								ReplicationFactor: 1,
+							}}},
 					},
 					{
 						header: &protocol.RequestHeader{CorrelationID: 2},
-						req: &protocol.ProduceRequest{TopicData: []*protocol.TopicData{{
-							Topic: "the-topic",
-							Data: []*protocol.Data{{
-								RecordSet: mustEncode(&protocol.MessageSet{Offset: 0, Messages: []*protocol.Message{{Value: []byte("The message.")}}})}}}}},
+						req: &protocol.ProduceRequest{
+							Timeout: 100 * time.Millisecond,
+							TopicData: []*protocol.TopicData{{
+								Topic: "the-topic",
+								Data: []*protocol.Data{{
+									RecordSet: mustEncode(&protocol.MessageSet{Offset: 0, Messages: []*protocol.Message{{Value: []byte("The message.")}}})}}},
+							}},
 					},
 					{
 						header: &protocol.RequestHeader{CorrelationID: 3},
-						req:    &protocol.FetchRequest{ReplicaID: 1, MinBytes: 5, Topics: []*protocol.FetchTopic{{Topic: "the-topic", Partitions: []*protocol.FetchPartition{{Partition: 0, FetchOffset: 0, MaxBytes: 100}}}}},
+						req: &protocol.FetchRequest{
+							MaxWaitTime: 100 * time.Millisecond,
+							ReplicaID:   1,
+							MinBytes:    5,
+							Topics: []*protocol.FetchTopic{
+								{
+									Topic: "the-topic",
+									Partitions: []*protocol.FetchPartition{{Partition: 0,
+										FetchOffset: 0,
+										MaxBytes:    100,
+									}},
+								},
+							}},
 					},
 				},
 				responses: []*Context{
@@ -284,18 +305,22 @@ func TestBroker_Run(t *testing.T) {
 				requests: []*Context{
 					{
 						header: &protocol.RequestHeader{CorrelationID: 1},
-						req: &protocol.CreateTopicRequests{Requests: []*protocol.CreateTopicRequest{{
-							Topic:             "the-topic",
-							NumPartitions:     1,
-							ReplicationFactor: 1,
-						}}},
+						req: &protocol.CreateTopicRequests{
+							Timeout: 100 * time.Millisecond,
+							Requests: []*protocol.CreateTopicRequest{{
+								Topic:             "the-topic",
+								NumPartitions:     1,
+								ReplicationFactor: 1,
+							}}},
 					},
 					{
 						header: &protocol.RequestHeader{CorrelationID: 2},
-						req: &protocol.ProduceRequest{TopicData: []*protocol.TopicData{{
-							Topic: "the-topic",
-							Data: []*protocol.Data{{
-								RecordSet: mustEncode(&protocol.MessageSet{Offset: 0, Messages: []*protocol.Message{{Value: []byte("The message.")}}})}}}}},
+						req: &protocol.ProduceRequest{
+							Timeout: 100 * time.Millisecond,
+							TopicData: []*protocol.TopicData{{
+								Topic: "the-topic",
+								Data: []*protocol.Data{{
+									RecordSet: mustEncode(&protocol.MessageSet{Offset: 0, Messages: []*protocol.Message{{Value: []byte("The message.")}}})}}}}},
 					},
 					{
 						header: &protocol.RequestHeader{CorrelationID: 3},
@@ -348,10 +373,12 @@ func TestBroker_Run(t *testing.T) {
 				responseCh: make(chan *Context, 2),
 				requests: []*Context{{
 					header: &protocol.RequestHeader{CorrelationID: 2},
-					req: &protocol.ProduceRequest{TopicData: []*protocol.TopicData{{
-						Topic: "another-topic",
-						Data: []*protocol.Data{{
-							RecordSet: mustEncode(&protocol.MessageSet{Offset: 1, Messages: []*protocol.Message{{Value: []byte("The message.")}}})}}}}}},
+					req: &protocol.ProduceRequest{
+						Timeout: 100 * time.Millisecond,
+						TopicData: []*protocol.TopicData{{
+							Topic: "another-topic",
+							Data: []*protocol.Data{{
+								RecordSet: mustEncode(&protocol.MessageSet{Offset: 1, Messages: []*protocol.Message{{Value: []byte("The message.")}}})}}}}}},
 				},
 				responses: []*Context{{
 					header: &protocol.RequestHeader{CorrelationID: 2},
